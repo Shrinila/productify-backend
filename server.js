@@ -8,28 +8,25 @@ app.use(express.json());
 const allowedOrigins = [
   "http://localhost:5173",
   "https://productify-frontend-taupe.vercel.app",
+  "https://productify-frontend-3qwut3uz-shrinilas-projects.vercel.app"
 ];
 
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      // allow Postman / curl
-      if (!origin) return callback(null, true);
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true); // allow Postman/curl
 
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
 
-      return callback(new Error("CORS not allowed"), false);
-    },
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    credentials: true,
-  })
-);
+    return callback(new Error("CORS blocked"), false);
+  },
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  credentials: true,
+}));
 
-// ⭐ VERY IMPORTANT
+// 🔥 THIS LINE IS MANDATORY
 app.options("*", cors());
-
 
 
 // ---------------------------------------
