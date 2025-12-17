@@ -12,19 +12,15 @@ const allowedOrigins = [
 
 app.use(
   cors({
-    origin: function (origin, callback) {
-      if (!origin) return callback(null, true);
-
-      if (allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(null, true); // temporarily allow to avoid deploy crash
-      }
-    },
+    origin: [
+      "http://localhost:5173",
+      "https://productify-frontend-taupe.vercel.app"
+    ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
 );
+
 
 
 // ---------------------------------------
