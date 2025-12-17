@@ -2,24 +2,33 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const bcrypt = require("bcryptjs");
-
 const app = express();
 app.use(express.json());
+
 const allowedOrigins = [
   "http://localhost:5173",
-  process.env.FRONTEND_URL,
-].filter(Boolean); // ⭐ THIS IS THE KEY FIX
+  "https://productify-frontend-taupe.vercel.app",
+];
 
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "https://productify-frontend-taupe.vercel.app"
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    origin: function (origin, callback) {
+      // allow Postman / curl
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("CORS not allowed"), false);
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
   })
 );
+
+// ⭐ VERY IMPORTANT
+app.options("*", cors());
 
 
 
