@@ -26,7 +26,7 @@ app.use(cors({
 }));
 
 // 🔥 THIS LINE IS MANDATORY
-app.options("*", cors());
+app.options("/", cors());
 
 
 // ---------------------------------------
