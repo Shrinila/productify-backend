@@ -7,26 +7,26 @@ app.use(express.json());
 
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://productify-frontend-taupe.vercel.app",
-  "https://productify-frontend-3qwut3uz-shrinilas-projects.vercel.app"
+  "https://scintillating-tiramisu-b45965.netlify.app"
 ];
 
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin) return callback(null, true); // allow Postman/curl
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error("CORS not allowed"));
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"]
+  })
+);
 
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
-
-    return callback(new Error("CORS blocked"), false);
-  },
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  credentials: true,
-}));
-
-// 🔥 THIS LINE IS MANDATORY
-app.options("/", cors());
+// ✅ handle preflight for ALL routes
+app.options("*", cors());
 
 
 // ---------------------------------------
@@ -166,23 +166,29 @@ app.post("/tasks", async (req, res) => {
   try {
     const { userId, text, description, dueDate, priority, status } = req.body;
 
+    console.log("TASK BODY:", req.body);
+
+    if (!userId || !text) {
+      return res.status(400).json({ message: "userId and text required" });
+    }
+
     const task = new Task({
       userId,
       text,
-      description,
-      dueDate,
-      priority,
-      status,
+      description: description || "",
+      dueDate: dueDate || null,
+      priority: priority || "medium",
+      status: status || "todo",
     });
 
     await task.save();
-
     res.json(task);
   } catch (err) {
-    console.log(err);
+    console.error("TASK ERROR:", err);
     res.status(500).json({ message: "Task creation failed" });
   }
 });
+
 
 // ---------------------------------------
 // 7. GET TASKS FOR USER
